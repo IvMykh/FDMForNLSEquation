@@ -10,37 +10,38 @@ namespace FDMForNSE.AlgorithmImplementation
     {
         public static void Main(string[] args)
         {
-            var xInterval       = new Interval { Start = 0.0, End = 10.0 };
-            var tInterval       = new Interval { Start = 0.0, End = 10.0 };
-
-            var net             = new Net { XStepsCount = 20, TStepsCount = 70 };
-
-            var initCondFunc    = new InitConditions
-                                    {
-                                        FiOfX   = (double x) => { return Math.Exp(-x * x); },
-                                        PsiOfT0 = (double t) => { return 0.0; },
-                                        PsiOfTL = (double t) => { return 0.0; }
-                                    };
-
-            var nseSolver       = new NseSolver(xInterval, tInterval, initCondFunc, net);
-            
-            PrintApproximateSolution(nseSolver.GetApproximateSolution(1));
-            PrintApproximateSolution(nseSolver.GetApproximateSolution(2));
-            PrintApproximateSolution(nseSolver.GetApproximateSolution(3));
-
-            PrintApproximateSolution(nseSolver.GetApproximateSolution(4));
-            PrintApproximateSolution(nseSolver.GetApproximateSolution(5));
+            //TestNlseSolverIterator(NlseSolver.DefaultSolver);
+            PrintApproximateSolution(NlseSolver.DefaultSolver.GetApproximateSolution(20000));
         }
 
-        public static void PrintApproximateSolution(ApproximationPoint[] solution)
+        public static void PrintApproximateSolution(IEnumerable<ApproximationPoint> solution)
         {
-            Console.WriteLine("{0,30}", "Approximate solution");
+            Console.WriteLine("{0,20}", "Approximate solution");
             Console.WriteLine("{0,10}{1,10}", "x", "|U|");
             Console.WriteLine("------------------------------");
 
             foreach (var approxPoint in solution)
             {
                 Console.WriteLine("{0,10:F3}{1,10:F3}", approxPoint.X, approxPoint.U.Magnitude);
+            }
+        }
+
+        public static void TestNlseSolverIterator(NlseSolver nlseSolver)
+        {
+            var solutionsEnumerator = nlseSolver.SequenceOfApproximations().GetEnumerator();
+            var shouldProceed       = solutionsEnumerator.MoveNext();
+
+            var count = 1;
+            for (int i = 0; i < count && shouldProceed; ++i)
+            {
+                if (i == count - 1)
+                {
+                    Console.WriteLine("***Solution {0}***", i + 1);
+                    PrintApproximateSolution(solutionsEnumerator.Current);
+                    Console.WriteLine("\n\n");
+                }
+
+                shouldProceed = solutionsEnumerator.MoveNext();
             }
         }
     }
