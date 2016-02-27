@@ -2,6 +2,10 @@
 using System.Collections.Generic;
 using System.Numerics;
 
+
+// TODO: make animation in ResultsPresenter;
+
+
 namespace FDMForNSE.AlgorithmImplementation
 {
     using FiZero = Func<double, double>;

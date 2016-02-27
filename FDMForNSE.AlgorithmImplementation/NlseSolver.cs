@@ -12,10 +12,9 @@ namespace FDMForNSE.AlgorithmImplementation
         // static members;
         private static NlseSolver defaultSolver;
 
-        // TODO: deal with too great residual (perhaps there is a bug in computation scheme -> remake);
         static NlseSolver()
         {
-            var xInterval       = new Interval  { Start = -5.0,  End = 25.0 };
+            var xInterval       = new Interval  { Start = -10.0,  End = 10.0 }; // originally [0, 20]
             var tInterval       = new Interval  { Start = 0.0,  End = 10.0 };
 
             var net             = new Net       { XStep = 0.05, TStep = 0.00001 };
@@ -23,15 +22,15 @@ namespace FDMForNSE.AlgorithmImplementation
                 {
                     const double SQRT_2 = 1.4142135623730950488016887242097;
                     return SQRT_2 * 
-                        (Complex.Exp((x - 5.0) / 2.0 * Complex.ImaginaryOne) / Math.Cosh(x - 5.0) +
-                        Complex.Exp((x - 15.0) / 2.0 * Complex.ImaginaryOne) / Math.Cosh(x - 15.0)); 
+                        (Complex.Exp((x - 5.0) / -2.0 * Complex.ImaginaryOne) / Math.Cosh(x - 5.0) +
+                        Complex.Exp((x + 5.0) / 2.0 * Complex.ImaginaryOne) / Math.Cosh(x + 5.0)); 
                 });
 
             var initCondFunc    = new InitConditions
                                     {
                                         FiOfX   = fiOfX,
-                                        PsiOfT0 = (double t) => { return 0; },
-                                        PsiOfTL = (double t) => { return 0; }
+                                        PsiOfT0 = (double t) => { return 0.0; },
+                                        PsiOfTL = (double t) => { return 0.0; }
                                     };
 
             defaultSolver       = new NlseSolver(xInterval, tInterval, initCondFunc, net);
@@ -58,7 +57,7 @@ namespace FDMForNSE.AlgorithmImplementation
             this.Net            = net;
         }
 
-        private ApproximationPoint[]                getInitApproximation()
+        private ApproximationPoint[] getInitApproximation()
         {
             var approxPointsCount = (int)((XInterval.End - XInterval.Start) / Net.XStep);
 
@@ -93,72 +92,119 @@ namespace FDMForNSE.AlgorithmImplementation
             return initApproxPoints;
         }
 
-        private ApproximationPoint[]                getNextApproximation(ApproximationPoint[] approxPointsPrev)
+        private ApproximationPoint[] getAfterInitApproximation(ApproximationPoint[] initApproxPoints)
         {
-            var approxPointsCount   = (int)((XInterval.End - XInterval.Start) / Net.XStep);
-
-            var approxPointsNext    = new ApproximationPoint[approxPointsCount + 1];
-            approxPointsNext[0]     = new ApproximationPoint
+            var afterInitApproxPoints = new ApproximationPoint[initApproxPoints.Length];
+            afterInitApproxPoints[0] = new ApproximationPoint
             {
                 X = XInterval.Start,
                 U = InitConds.PsiOfT0(XInterval.Start)
             };
 
-            approxPointsNext[approxPointsNext.Length - 1] = new ApproximationPoint
+            afterInitApproxPoints[afterInitApproxPoints.Length - 1] = new ApproximationPoint
             {
                 X = XInterval.End,
                 U = InitConds.PsiOfTL(XInterval.End)
             };
 
-            double x            = XInterval.Start;
-            double xStepSquare  = Net.XStep * Net.XStep;
+            double xStepSquare = Net.XStep * Net.XStep;
 
-            for (int i = 1; i < approxPointsNext.Length - 1; ++i)
+            for (int i = 1; i < afterInitApproxPoints.Length - 1; ++i)
             {
-                var Ui = approxPointsPrev[i].U;
+                var Ui = initApproxPoints[i].U;
 
-                var u = 2.0 * Complex.ImaginaryOne * Net.TStep * (
-                    (approxPointsPrev[i + 1].U - Ui - Ui + approxPointsPrev[i - 1].U) / xStepSquare +
+                var u = Complex.ImaginaryOne * Net.TStep * (
+                    (initApproxPoints[i + 1].U - Ui - Ui + initApproxPoints[i - 1].U) / xStepSquare +
                     Ui.Magnitude * Ui.Magnitude * Ui) +
-                    Ui;
+                    initApproxPoints[i].U;
 
-                approxPointsNext[i] = new ApproximationPoint
+                afterInitApproxPoints[i] = new ApproximationPoint
                 {
-                    X = x + i * Net.XStep,
+                    X = XInterval.Start + i * Net.XStep,
                     U = u
                 };
-
-                //x += Net.XStep;
             }
 
-            return approxPointsNext;
+            return afterInitApproxPoints;
+        }
+
+        private ApproximationPoint[] getNextApproximation(ApproximationPoint[] approxPointsJ, ApproximationPoint[] approxPointsJMinus1)
+        {
+            var approxPointsCount   = (int)((XInterval.End - XInterval.Start) / Net.XStep);
+
+            var approxPointsJPlus1    = new ApproximationPoint[approxPointsCount + 1];
+            approxPointsJPlus1[0]     = new ApproximationPoint
+            {
+                X = XInterval.Start,
+                U = InitConds.PsiOfT0(XInterval.Start)
+            };
+
+            approxPointsJPlus1[approxPointsJPlus1.Length - 1] = new ApproximationPoint
+            {
+                X = XInterval.End,
+                U = InitConds.PsiOfTL(XInterval.End)
+            };
+
+            double xStepSquare = Net.XStep * Net.XStep;
+
+            for (int i = 1; i < approxPointsJPlus1.Length - 1; ++i)
+            {
+                var Ui = approxPointsJ[i].U;
+
+                var u = 2.0 * Complex.ImaginaryOne * Net.TStep * (
+                    (approxPointsJ[i + 1].U - Ui - Ui + approxPointsJ[i - 1].U) / xStepSquare +
+                    Ui.Magnitude * Ui.Magnitude * Ui) +
+                    approxPointsJMinus1[i].U;
+
+                approxPointsJPlus1[i] = new ApproximationPoint
+                {
+                    X = XInterval.Start + i * Net.XStep,
+                    U = u
+                };
+            }
+
+            return approxPointsJPlus1;
         }
 
         public IEnumerable<ApproximationPoint>      GetApproximateSolution(int timeMoment)
         {
-            ApproximationPoint[] approxPointsPrev = getInitApproximation();
-            ApproximationPoint[] approxPointsNext = null;
-            
-            for (int j = 0; j < timeMoment; ++j)
-            {
-                approxPointsNext = getNextApproximation(approxPointsPrev);
-                approxPointsPrev = approxPointsNext;
-            }
+            ApproximationPoint[] approxPointsJMinus1    = getInitApproximation();
+            ApproximationPoint[] approxPointsJ          = getAfterInitApproximation(approxPointsJMinus1);
+            ApproximationPoint[] approxPointsJPlus1     = null;
 
-            return approxPointsPrev;
+            switch (timeMoment)
+            {
+                case 0: return approxPointsJMinus1;
+                case 1: return approxPointsJ;
+                default:
+                    {
+                        for (int j = 2; j <= timeMoment; ++j)
+                        {
+                            approxPointsJPlus1  = getNextApproximation(approxPointsJ, approxPointsJMinus1);
+                            approxPointsJMinus1 = approxPointsJ;
+                            approxPointsJ       = approxPointsJPlus1;
+                        }
+
+                        return approxPointsJPlus1;
+                    }
+            }
         }
 
         public IEnumerable<IEnumerable<ApproximationPoint>> SequenceOfApproximations()
         {
-            var approxPointsPrev = getInitApproximation();
-            yield return approxPointsPrev;
+            ApproximationPoint[] approxPointsJMinus1    = getInitApproximation();
+            yield return approxPointsJMinus1;
 
-            for (double tStep = TInterval.Start; tStep <= TInterval.End; tStep += Net.TStep)
+            ApproximationPoint[] approxPointsJ          = getAfterInitApproximation(approxPointsJMinus1);
+            yield return approxPointsJ;
+
+            for (double tStep = TInterval.Start + 2 * Net.XStep; tStep <= TInterval.End; tStep += Net.TStep)
             {
-                var approxPointsNext = getNextApproximation(approxPointsPrev);
-                yield return approxPointsNext;
+                var approxPointsJPlus1 = getNextApproximation(approxPointsJ, approxPointsJMinus1);
+                yield return approxPointsJPlus1;
 
-                approxPointsPrev = approxPointsNext;
+                approxPointsJMinus1 = approxPointsJ;
+                approxPointsJ = approxPointsJPlus1;
             }
         }
     }
