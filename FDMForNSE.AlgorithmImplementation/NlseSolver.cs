@@ -10,20 +10,21 @@ namespace FDMForNSE.AlgorithmImplementation
     public class NlseSolver
     {
         // static members;
-        private static NlseSolver defaultSolver;
+        private const double        SQRT_2          = 1.4142135623730950488016887242097;
+        
+        private static NlseSolver   defaultSolver;
 
         static NlseSolver()
         {
-            var xInterval       = new Interval  { Start = -10.0,  End = 10.0 }; // originally [0, 20]
-            var tInterval       = new Interval  { Start = 0.0,  End = 10.0 };
+            var xInterval   = new Interval  { Start = -15.0,    End = 15.0 }; // originally [0, 20], than [-10, 10]
+            var tInterval   = new Interval  { Start = 0.0,      End = 10.0 };
 
-            var net             = new Net       { XStep = 0.05, TStep = 0.00001 };
-            var fiOfX           = new ComplF((double x) => 
+            var net         = new Net       { XStep = 0.1, TStep = 0.0025 }; // 0.05, 0.00001
+            var fiOfX       = new ComplF((double x) => 
                 {
-                    const double SQRT_2 = 1.4142135623730950488016887242097;
-                    return SQRT_2 * 
+                    return  SQRT_2 * 
                         (Complex.Exp((x - 5.0) / -2.0 * Complex.ImaginaryOne) / Math.Cosh(x - 5.0) +
-                        Complex.Exp((x + 5.0) / 2.0 * Complex.ImaginaryOne) / Math.Cosh(x + 5.0)); 
+                         Complex.Exp((x + 5.0) / 2.0  * Complex.ImaginaryOne) / Math.Cosh(x + 5.0)); 
                 });
 
             var initCondFunc    = new InitConditions

@@ -1,0 +1,6 @@
+D:\VS 2013\FDMForNSE\FDMForNSE.AlgorithmImplementation\bin\Release\FDMForNSE.AlgorithmImplementation.exe.config
+D:\VS 2013\FDMForNSE\FDMForNSE.AlgorithmImplementation\bin\Release\FDMForNSE.AlgorithmImplementation.exe
+D:\VS 2013\FDMForNSE\FDMForNSE.AlgorithmImplementation\bin\Release\FDMForNSE.AlgorithmImplementation.pdb
+D:\VS 2013\FDMForNSE\FDMForNSE.AlgorithmImplementation\obj\Release\FDMForNSE.AlgorithmImplementation.exe
+D:\VS 2013\FDMForNSE\FDMForNSE.AlgorithmImplementation\obj\Release\FDMForNSE.AlgorithmImplementation.pdb
+D:\VS 2013\FDMForNSE\FDMForNSE.AlgorithmImplementation\obj\Release\FDMForNSE.AlgorithmImplementation.csprojResolveAssemblyReference.cache
