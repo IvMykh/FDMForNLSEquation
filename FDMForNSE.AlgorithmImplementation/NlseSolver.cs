@@ -9,22 +9,48 @@ namespace FDMForNSE.AlgorithmImplementation
 
     public class NlseSolver
     {
-        // static members;
-        private const double        SQRT_2          = 1.4142135623730950488016887242097;
-        
+        // Static members.
         private static NlseSolver   defaultSolver;
 
         static NlseSolver()
         {
-            var xInterval   = new Interval  { Start = -15.0,    End = 15.0 }; // originally [0, 20], than [-10, 10]
+            var xInterval   = new Interval  { Start = -20.0,    End = 20.0 }; // originally [0, 20], than [-10, 10]
             var tInterval   = new Interval  { Start = 0.0,      End = 10.0 };
 
-            var net         = new Net       { XStep = 0.1, TStep = 0.0025 }; // 0.05, 0.00001
+            var net         = new Net   //  { XStep = 0.1,     TStep = 0.00005 };
+                                        //  { XStep = 0.05,     TStep = 0.00001 }; 
+                                          { XStep = 0.1, TStep = 0.0025};
+
+            //double alpha    = 1;
+            //double U        = 500.0;
+            //double omega    = 0;
+
+            //double amplitude = 0.5;
+
+            Complex i = Complex.ImaginaryOne;
+            
             var fiOfX       = new ComplF((double x) => 
                 {
-                    return  SQRT_2 * 
-                        (Complex.Exp((x - 5.0) / -2.0 * Complex.ImaginaryOne) / Math.Cosh(x - 5.0) +
-                         Complex.Exp((x + 5.0) / 2.0  * Complex.ImaginaryOne) / Math.Cosh(x + 5.0)); 
+                    //double sqrtAlpha = Math.Sqrt(alpha);
+                    //double denominator = Math.Cosh(sqrtAlpha * (x - omega));
+
+                    var ampl1 = 1.0;
+                    var v1 = 1.0;
+
+                    var ampl2 = 1.7;
+                    var v2 = 2;
+
+                    var ampl3 = 0.8;
+                    var v3 = 0.8;
+
+                    return
+                        //SQRT_2 * sqrtAlpha * Complex.Exp(i * U * x / 2.0) /
+                        //(denominator * denominator);
+
+                        SpecData.SQRT_2 *
+                        (//ampl1 * Complex.Exp((x) * i * -v1) / (Math.Cosh(ampl1 * (x - 5)))
+                       + ampl2 * Complex.Exp((x) * i * v2)  / (Math.Cosh(ampl2 * (x + 5)))
+                       + ampl3 * Complex.Exp((x) * i * v3)  / (Math.Cosh(ampl3 * (x))));
                 });
 
             var initCondFunc    = new InitConditions
@@ -54,8 +80,17 @@ namespace FDMForNSE.AlgorithmImplementation
         {
             this.XInterval      = xInterval;
             this.TInterval      = tInterval;
-            this.InitConds      = initConds;
             this.Net            = net;
+            
+            this.InitConds      = initConds;
+        }
+
+        public NlseSolver(Configuration configuration)
+        {
+            this.XInterval  = configuration.XInterval;
+            this.TInterval  = configuration.TInterval;
+            this.Net        = configuration.Net;
+            this.InitConds  = configuration.InitConditions;
         }
 
         private ApproximationPoint[] getInitApproximation()
@@ -92,7 +127,6 @@ namespace FDMForNSE.AlgorithmImplementation
 
             return initApproxPoints;
         }
-
         private ApproximationPoint[] getAfterInitApproximation(ApproximationPoint[] initApproxPoints)
         {
             var afterInitApproxPoints = new ApproximationPoint[initApproxPoints.Length];
@@ -128,7 +162,6 @@ namespace FDMForNSE.AlgorithmImplementation
 
             return afterInitApproxPoints;
         }
-
         private ApproximationPoint[] getNextApproximation(ApproximationPoint[] approxPointsJ, ApproximationPoint[] approxPointsJMinus1)
         {
             var approxPointsCount   = (int)((XInterval.End - XInterval.Start) / Net.XStep);
@@ -167,7 +200,7 @@ namespace FDMForNSE.AlgorithmImplementation
             return approxPointsJPlus1;
         }
 
-        public IEnumerable<ApproximationPoint>      GetApproximateSolution(int timeMoment)
+        public IEnumerable<ApproximationPoint> GetApproximateSolution(int timeMoment)
         {
             ApproximationPoint[] approxPointsJMinus1    = getInitApproximation();
             ApproximationPoint[] approxPointsJ          = getAfterInitApproximation(approxPointsJMinus1);

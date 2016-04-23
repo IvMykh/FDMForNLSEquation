@@ -36,7 +36,9 @@ namespace FDMForNSE.Visualization
             _timer                  = null;
             _zedGraph               = createZedGraphControl();
             _currTimeMoment         = _eqSolver.TInterval.Start;
-            
+
+            setupSolutionTypeComboBox();
+
             graphPanel.Controls.Add(_zedGraph);
         }
 
@@ -65,6 +67,11 @@ namespace FDMForNSE.Visualization
             zedGraph.AxisChange();
 
             return zedGraph;
+        }
+        private void setupSolutionTypeComboBox()
+        {
+            solutionTypeComboBox.Items.AddRange(ConfigVariantName.GetConfigVariantsRange());
+            solutionTypeComboBox.SelectedIndex = 0;
         }
 
         private void startStopButton_Click(object sender, EventArgs e)
@@ -95,21 +102,24 @@ namespace FDMForNSE.Visualization
 
             configGroupBox.Enabled = !configGroupBox.Enabled;
         }
+        private void resetConfigButton_Click(object sender, EventArgs e)
+        {
+            setDefaultConfiguration();
+        }
 
         private void setDefaultConfiguration()
         {
-            _eqSolver   = new NlseSolver(
-                    NlseSolver.DefaultSolver.XInterval,
-                    NlseSolver.DefaultSolver.TInterval,
-                    NlseSolver.DefaultSolver.InitConds,
-                    NlseSolver.DefaultSolver.Net
-                );
-
+            var eqSolver = new NlseSolver(ConfigurationsStore.Store[ConfigVariant.OneSoliton]);
+            setConfiguration(eqSolver);
+        }
+        private void setConfiguration(NlseSolver eqSolver)
+        {
+            _eqSolver = eqSolver;
+            
             _enumerator = null;
-
             durationNumericUpDown.Value = (int)_eqSolver.TInterval.End;
-            xStepNumericUpDown.Value    = (decimal)_eqSolver.Net.XStep;
-            tStepNumericUpDown.Value    = (decimal)_eqSolver.Net.TStep;
+            xStepNumericUpDown.Value = (decimal)_eqSolver.Net.XStep;
+            tStepNumericUpDown.Value = (decimal)_eqSolver.Net.TStep;
         }
 
         private void setUpTimeProgressBar()
@@ -167,11 +177,6 @@ namespace FDMForNSE.Visualization
                 }));
         }
 
-        private void resetConfigButton_Click(object sender, EventArgs e)
-        {
-            setDefaultConfiguration();
-        }
-
         private void durationNumericUpDown_ValueChanged(object sender, EventArgs e)
         {
             var numericUpDown   = sender as NumericUpDown;
@@ -183,7 +188,6 @@ namespace FDMForNSE.Visualization
 
             timeProgressBar.Step = (int)((timeProgressBar.Maximum - timeProgressBar.Minimum) / _eqSolver.TInterval.End);
         }
-
         private void xStepNumericUpDown_ValueChanged(object sender, EventArgs e)
         {
             var numericUpDown   = sender as NumericUpDown;
@@ -193,7 +197,6 @@ namespace FDMForNSE.Visualization
                     TStep = _eqSolver.Net.TStep 
                 };
         }
-
         private void tStepNumericUpDown_ValueChanged(object sender, EventArgs e)
         {
             var numericUpDown   = sender as NumericUpDown;
@@ -202,6 +205,14 @@ namespace FDMForNSE.Visualization
                     XStep = _eqSolver.Net.XStep,
                     TStep = (double)numericUpDown.Value 
                 };
+        }
+
+        private void solutionTypeComboBox_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            var cvn         = (ConfigVariantName)solutionTypeComboBox.SelectedItem;
+            var eqSolver    = new NlseSolver(ConfigurationsStore.Store[cvn.ConfigVariant]);
+
+            setConfiguration(eqSolver);
         }
     }
 }

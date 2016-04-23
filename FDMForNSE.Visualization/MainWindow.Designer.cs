@@ -29,7 +29,9 @@
         private void InitializeComponent()
         {
             this.sidePanel = new System.Windows.Forms.Panel();
+            this.timeProgressBar = new System.Windows.Forms.ProgressBar();
             this.configGroupBox = new System.Windows.Forms.GroupBox();
+            this.solutionTypeComboBox = new System.Windows.Forms.ComboBox();
             this.resetConfigButton = new System.Windows.Forms.Button();
             this.tStepNumericUpDown = new System.Windows.Forms.NumericUpDown();
             this.xStepNumericUpDown = new System.Windows.Forms.NumericUpDown();
@@ -39,7 +41,6 @@
             this.durationLabel = new System.Windows.Forms.Label();
             this.startStopButton = new System.Windows.Forms.Button();
             this.graphPanel = new System.Windows.Forms.Panel();
-            this.timeProgressBar = new System.Windows.Forms.ProgressBar();
             this.sidePanel.SuspendLayout();
             this.configGroupBox.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.tStepNumericUpDown)).BeginInit();
@@ -60,11 +61,19 @@
             this.sidePanel.Size = new System.Drawing.Size(154, 411);
             this.sidePanel.TabIndex = 0;
             // 
+            // timeProgressBar
+            // 
+            this.timeProgressBar.Location = new System.Drawing.Point(12, 19);
+            this.timeProgressBar.Name = "timeProgressBar";
+            this.timeProgressBar.Size = new System.Drawing.Size(121, 23);
+            this.timeProgressBar.TabIndex = 2;
+            // 
             // configGroupBox
             // 
             this.configGroupBox.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
+            this.configGroupBox.Controls.Add(this.solutionTypeComboBox);
             this.configGroupBox.Controls.Add(this.resetConfigButton);
             this.configGroupBox.Controls.Add(this.tStepNumericUpDown);
             this.configGroupBox.Controls.Add(this.xStepNumericUpDown);
@@ -79,9 +88,18 @@
             this.configGroupBox.TabStop = false;
             this.configGroupBox.Text = "Configuration";
             // 
+            // solutionTypeComboBox
+            // 
+            this.solutionTypeComboBox.FormattingEnabled = true;
+            this.solutionTypeComboBox.Location = new System.Drawing.Point(0, 185);
+            this.solutionTypeComboBox.Name = "solutionTypeComboBox";
+            this.solutionTypeComboBox.Size = new System.Drawing.Size(147, 21);
+            this.solutionTypeComboBox.TabIndex = 5;
+            this.solutionTypeComboBox.SelectedIndexChanged += new System.EventHandler(this.solutionTypeComboBox_SelectedIndexChanged);
+            // 
             // resetConfigButton
             // 
-            this.resetConfigButton.Location = new System.Drawing.Point(9, 225);
+            this.resetConfigButton.Location = new System.Drawing.Point(9, 128);
             this.resetConfigButton.Name = "resetConfigButton";
             this.resetConfigButton.Size = new System.Drawing.Size(121, 32);
             this.resetConfigButton.TabIndex = 4;
@@ -93,23 +111,23 @@
             // 
             this.tStepNumericUpDown.DecimalPlaces = 4;
             this.tStepNumericUpDown.Increment = new decimal(new int[] {
-            5,
+            1,
             0,
             0,
-            262144});
-            this.tStepNumericUpDown.Location = new System.Drawing.Point(81, 102);
+            327680});
+            this.tStepNumericUpDown.Location = new System.Drawing.Point(65, 83);
             this.tStepNumericUpDown.Maximum = new decimal(new int[] {
             5,
             0,
             0,
             131072});
             this.tStepNumericUpDown.Minimum = new decimal(new int[] {
-            5,
+            1,
             0,
             0,
-            262144});
+            327680});
             this.tStepNumericUpDown.Name = "tStepNumericUpDown";
-            this.tStepNumericUpDown.Size = new System.Drawing.Size(60, 20);
+            this.tStepNumericUpDown.Size = new System.Drawing.Size(76, 20);
             this.tStepNumericUpDown.TabIndex = 3;
             this.tStepNumericUpDown.Value = new decimal(new int[] {
             5,
@@ -126,7 +144,7 @@
             0,
             0,
             131072});
-            this.xStepNumericUpDown.Location = new System.Drawing.Point(81, 76);
+            this.xStepNumericUpDown.Location = new System.Drawing.Point(65, 57);
             this.xStepNumericUpDown.Maximum = new decimal(new int[] {
             2,
             0,
@@ -138,7 +156,7 @@
             0,
             131072});
             this.xStepNumericUpDown.Name = "xStepNumericUpDown";
-            this.xStepNumericUpDown.Size = new System.Drawing.Size(60, 20);
+            this.xStepNumericUpDown.Size = new System.Drawing.Size(76, 20);
             this.xStepNumericUpDown.TabIndex = 2;
             this.xStepNumericUpDown.Value = new decimal(new int[] {
             1,
@@ -150,7 +168,7 @@
             // tStepLabel
             // 
             this.tStepLabel.AutoSize = true;
-            this.tStepLabel.Location = new System.Drawing.Point(6, 104);
+            this.tStepLabel.Location = new System.Drawing.Point(6, 85);
             this.tStepLabel.Name = "tStepLabel";
             this.tStepLabel.Size = new System.Drawing.Size(53, 13);
             this.tStepLabel.TabIndex = 3;
@@ -159,7 +177,7 @@
             // xStepLabel
             // 
             this.xStepLabel.AutoSize = true;
-            this.xStepLabel.Location = new System.Drawing.Point(6, 78);
+            this.xStepLabel.Location = new System.Drawing.Point(6, 59);
             this.xStepLabel.Name = "xStepLabel";
             this.xStepLabel.Size = new System.Drawing.Size(55, 13);
             this.xStepLabel.TabIndex = 2;
@@ -167,14 +185,14 @@
             // 
             // durationNumericUpDown
             // 
-            this.durationNumericUpDown.Location = new System.Drawing.Point(81, 31);
+            this.durationNumericUpDown.Location = new System.Drawing.Point(65, 31);
             this.durationNumericUpDown.Maximum = new decimal(new int[] {
             50,
             0,
             0,
             0});
             this.durationNumericUpDown.Name = "durationNumericUpDown";
-            this.durationNumericUpDown.Size = new System.Drawing.Size(60, 20);
+            this.durationNumericUpDown.Size = new System.Drawing.Size(76, 20);
             this.durationNumericUpDown.TabIndex = 1;
             this.durationNumericUpDown.ValueChanged += new System.EventHandler(this.durationNumericUpDown_ValueChanged);
             // 
@@ -206,13 +224,6 @@
             this.graphPanel.Name = "graphPanel";
             this.graphPanel.Size = new System.Drawing.Size(496, 411);
             this.graphPanel.TabIndex = 1;
-            // 
-            // timeProgressBar
-            // 
-            this.timeProgressBar.Location = new System.Drawing.Point(12, 19);
-            this.timeProgressBar.Name = "timeProgressBar";
-            this.timeProgressBar.Size = new System.Drawing.Size(121, 23);
-            this.timeProgressBar.TabIndex = 2;
             // 
             // MainWindow
             // 
@@ -247,6 +258,7 @@
         private System.Windows.Forms.NumericUpDown xStepNumericUpDown;
         private System.Windows.Forms.Button resetConfigButton;
         private System.Windows.Forms.ProgressBar timeProgressBar;
+        private System.Windows.Forms.ComboBox solutionTypeComboBox;
     }
 }
 

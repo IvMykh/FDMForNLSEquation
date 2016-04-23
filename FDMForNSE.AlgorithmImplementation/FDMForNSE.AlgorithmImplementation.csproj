@@ -43,6 +43,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ConfigurationHelpers.cs" />
     <Compile Include="Helpers.cs" />
     <Compile Include="NlseSolver.cs" />
     <Compile Include="Program.cs" />

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Numerics;
+using System.Collections.Generic;
 
 namespace FDMForNSE.AlgorithmImplementation
 {
@@ -31,4 +32,11 @@ namespace FDMForNSE.AlgorithmImplementation
         public double   X { get; set; }
         public Complex  U { get; set; }
 	}
+
+    public static class SpecData
+    {
+        public const double             SQRT_2  = 1.4142135623730950488016887242097;
+        public static readonly  Complex I       = Complex.ImaginaryOne;
+    }
+
 }
