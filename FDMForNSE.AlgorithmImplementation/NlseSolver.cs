@@ -4,8 +4,7 @@ using System.Numerics;
 
 namespace FDMForNSE.AlgorithmImplementation
 {
-    using F         = Func<double, double>;
-    using ComplF    = Func<double, Complex>;
+    using ComplF = Func<double, Complex>;
 
     public class NlseSolver
     {

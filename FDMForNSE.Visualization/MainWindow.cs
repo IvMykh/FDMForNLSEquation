@@ -1,10 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
 using System.Drawing;
-using System.Linq;
-using System.Text;
 using System.Threading;
 using System.Windows.Forms;
 
@@ -13,8 +9,8 @@ using ZedGraph;
 
 namespace FDMForNSE.Visualization
 {
-    using Timer                 = System.Threading.Timer;
-    using SolutionEnumerator    = IEnumerator<IEnumerable<ApproximationPoint>>;
+    using SolutionEnumerator = IEnumerator<IEnumerable<ApproximationPoint>>;
+    using Timer = System.Threading.Timer;
 
     public partial class MainWindow : Form
     {

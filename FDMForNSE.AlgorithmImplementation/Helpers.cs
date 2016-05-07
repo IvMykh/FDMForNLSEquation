@@ -1,11 +1,10 @@
 ﻿using System;
 using System.Numerics;
-using System.Collections.Generic;
 
 namespace FDMForNSE.AlgorithmImplementation
 {
-    using F         = Func<double, double>;
-    using ComplF    = Func<double, Complex>;
+    using ComplF = Func<double, Complex>;
+    using F = Func<double, double>;
 
     public struct InitConditions
     {
