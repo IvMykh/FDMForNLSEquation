@@ -105,7 +105,7 @@ namespace FDMForNSE.AlgorithmImplementation
 
                                 return SpecData.SQRT_2 *
                                     (ampl1 * Complex.Exp((x) * SpecData.I * -v1) /
-                                    (Math.Cosh(ampl1 * (x - 5))));
+                                    (Math.Cosh(ampl1 * (x))));
                             })
                     }
             };
