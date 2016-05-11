@@ -16,26 +16,14 @@ namespace FDMForNSE.AlgorithmImplementation
             var xInterval   = new Interval  { Start = -20.0,    End = 20.0 }; // originally [0, 20], than [-10, 10]
             var tInterval   = new Interval  { Start = 0.0,      End = 10.0 };
 
-            var net         = new Net   //  { XStep = 0.1,     TStep = 0.00005 };
-                                        //  { XStep = 0.05,     TStep = 0.00001 }; 
-                                          { XStep = 0.1, TStep = 0.0025};
-
-            //double alpha    = 1;
-            //double U        = 500.0;
-            //double omega    = 0;
-
-            //double amplitude = 0.5;
+            var net         = new Net   { XStep = 0.1, TStep = 0.0025};
+                                    //  { XStep = 0.1,     TStep = 0.00005 };
+                                    //  { XStep = 0.05,     TStep = 0.00001 };
 
             Complex i = Complex.ImaginaryOne;
             
             var fiOfX       = new ComplF((double x) => 
                 {
-                    //double sqrtAlpha = Math.Sqrt(alpha);
-                    //double denominator = Math.Cosh(sqrtAlpha * (x - omega));
-
-                    var ampl1 = 1.0;
-                    var v1 = 1.0;
-
                     var ampl2 = 1.7;
                     var v2 = 2;
 
@@ -43,12 +31,8 @@ namespace FDMForNSE.AlgorithmImplementation
                     var v3 = 0.8;
 
                     return
-                        //SQRT_2 * sqrtAlpha * Complex.Exp(i * U * x / 2.0) /
-                        //(denominator * denominator);
-
                         SpecData.SQRT_2 *
-                        (//ampl1 * Complex.Exp((x) * i * -v1) / (Math.Cosh(ampl1 * (x - 5)))
-                       + ampl2 * Complex.Exp((x) * i * v2)  / (Math.Cosh(ampl2 * (x + 5)))
+                        (ampl2 * Complex.Exp((x) * i * v2)  / (Math.Cosh(ampl2 * (x + 5)))
                        + ampl3 * Complex.Exp((x) * i * v3)  / (Math.Cosh(ampl3 * (x))));
                 });
 
@@ -109,20 +93,6 @@ namespace FDMForNSE.AlgorithmImplementation
 
                 x += Net.XStep;
             }
-
-            #region //Start and end values.
-            /*initApproxPoints[0] = new ApproximationPoint
-            {
-                X = XInterval.Start,
-                U = InitConds.PsiOfT0(XInterval.Start)
-            };
-            
-            initApproxPoints[initApproxPoints.Length - 1] = new ApproximationPoint
-            {
-                X = XInterval.End,
-                U = InitConds.PsiOfTL(XInterval.End)
-            };*/
-            #endregion
 
             return initApproxPoints;
         }
